@@ -1,0 +1,68 @@
+KONFIGURASI DNS DEBIAN
+
+1. INSTALASI
+	apt-get install bind9
+	aplikasi bind berada di disk 1
+
+2. KONFIGURASI IP
+	nano /etc/network/interfaces
+	
+	# The primary network interfaces
+	auto eth0
+	iface eth0 inet static
+		address 192.168.1.1
+		netmask 255.255.255.0
+
+	setelah selesai di konfigurasi silahkan restart dengan
+	service networking restart
+
+3. KONFIGURASI BIND
+	masuk direktori bind dengan
+	cd /etc/bind
+
+	lalu konfigurasi file named.conf.local
+	zone "orbit.com" {
+		type master;
+		file "/etc/bind/db.orbit";
+	};
+	
+	zone "1.168.192.in-addr.arpa"{
+		type master;
+		file "/etc/bind/db.1";
+	};
+
+	setelah itu copy isi file dari db.local dan db.127 ke db yang sudah kalian buat
+	db.local di copy ke db.orbit dan db.127 di copy ke db.1
+	cp db.local db.orbit
+	cp db.127 db.1
+	
+	setelah itu edit file db.orbit
+	nano db.orbit
+	ganti semua dengan kata localhost dengan nama orbit.com
+	dan ganti ip nya menjadi 192.168.1.1
+
+	edit file db.1
+	nano db.1
+	ganti semua dengan kata localhost dengan nama orbit.com
+	dan ganti ip nya menjadi 1 saja
+
+4. KONFIGURASI resolv.conf
+	edit dengan
+	nano /etc/resolv.conf
+
+	tambahkan
+	search orbit.com
+	nameserver 192.168.1.1
+
+5. TEST
+	Setelah semua selesai di konfigurasi silahkan restart bind dengan
+	service bind9 restart
+
+	dan untuk mengecek nya gunakan
+	nslookup orbit.com dan
+	nslookup 192.168.1.1
+
+jika tidak ada masalah berarti dns sudah selesai di konfigurasi
+jika ada yang salah silahkan cek kembali named.conf.local dan file db yang kalian buat
+		
+	
